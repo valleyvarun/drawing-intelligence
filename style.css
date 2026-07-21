@@ -1,0 +1,161 @@
+:root {
+  --background: #000000;
+  --foreground: #f8f8f2;
+  --rule: #313131;
+  --body-background: #f4f1ea;
+  --body-text: #111111;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--body-text);
+  background: var(--body-background);
+  font-family: "Courier New", Courier, monospace;
+}
+
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 35% 30% 35%;
+  align-items: start;
+  width: 100%;
+  min-height: 6.5vh;
+  padding: 1.2vh 2.5vw;
+  color: var(--foreground);
+  background: var(--background);
+  border-bottom: 0.08vw solid var(--rule);
+}
+
+.site-header h1,
+.header-block p {
+  margin: 0;
+  line-height: 112%;
+}
+
+.site-header h1 {
+  align-self: center;
+  padding-top: 0.15vh;
+  font-size: 1.45vw;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.header-block {
+  font-size: 1vw;
+  font-weight: 400;
+}
+
+.header-left {
+  justify-self: start;
+  text-align: left;
+}
+
+.header-right {
+  justify-self: end;
+  text-align: right;
+}
+
+.header-right p:first-child {
+  font-weight: 700;
+}
+
+.page-body {
+  width: 100%;
+  margin-top: 6.5vh;
+}
+
+.section-target {
+  scroll-margin-top: 6.5vh;
+}
+
+.slide {
+  height: 93.5vh; /* 100vh - 6.5vh */
+  padding: 4vh 5vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  border-bottom: 0.08vw solid var(--rule);
+}
+
+.slide-title {
+  margin: 0 0 1.5vh 0;
+  font-size: 1.15vw;
+  font-weight: 700;
+  line-height: 120%;
+}
+
+.split-layout {
+  display: flex;
+  flex: 1;
+  border: 0.08vw solid var(--rule);
+  background: #ebe6dc;
+  min-height: 0; /* Important for flex child to be scrollable */
+}
+
+.left-text {
+  flex-direction: row;
+}
+
+.right-text {
+  flex-direction: row-reverse;
+}
+
+.text-box {
+  width: 25%;
+  padding: 1.2vh 1.2vw;
+  overflow-y: auto;
+}
+
+.left-text .text-box {
+  border-right: 0.08vw solid var(--rule);
+}
+
+.right-text .text-box {
+  border-left: 0.08vw solid var(--rule);
+}
+
+.viewport {
+  width: 75%;
+  position: relative;
+}
+
+.slide p {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.1vw;
+  line-height: 165%;
+  margin: 0;
+}
+
+.section-nav {
+  position: fixed;
+  right: 2.5vw;
+  bottom: 2.5vh;
+  z-index: 6;
+  display: flex;
+  gap: 0.5vw;
+}
+
+.section-nav button {
+  display: grid;
+  place-items: center;
+  width: 2.4vw;
+  min-width: 32px;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  color: var(--foreground);
+  background: var(--background);
+  border: 0.08vw solid var(--rule);
+  cursor: pointer;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1.3vw;
+}
