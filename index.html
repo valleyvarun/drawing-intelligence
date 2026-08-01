@@ -38,17 +38,27 @@
     <section class="slide section-target">
       <h2 class="slide-title">1. Introduction</h2>
       <div class="split-layout left-text">
-        <div class="text-box">
+        <div class="text-box" style="overflow: hidden;">
           <!-- SLIDE 1: TEXT CONTENT GOES HERE -->
-          <p><strong>Drawing Intelligence: Human-Computer Interaction Through the Sketch</strong></p>
+          <p><strong>Drawing Intelligence: Sketching as a Computational Language</strong></p>
           <br>
-          <p>Harold and Purple Crayon</p>
-          <p>&rarr; Harold uses drawing to bring his imagination to the real world</p>
-          <br>
-          <p>This project explores drawing as a form of language that can be used to communicate with computers.</p>
+          <p>This project explores drawing as a language used to communicate with computers.</p>
+          
+          <div style="width: 110%; margin-left: -5%; margin-top: 3.5vh; display: flex; justify-content: center;">
+            <img src="drawings/keywords-drawings1.png" alt="Keywords Drawing" style="width: 100%; height: auto;">
+          </div>
         </div>
-        <div class="viewport">
+        <div class="viewport" style="display: flex; flex-direction: column;">
           <!-- SLIDE 1: VIEWPORT CONTENT GOES HERE -->
+          <div class="video-grid">
+            <video src="videos/harold 1.mp4" autoplay loop muted playsinline></video>
+            <video src="videos/harold 2.mp4" autoplay loop muted playsinline></video>
+            <video src="videos/harold 3.mp4" autoplay loop muted playsinline></video>
+            <video src="videos/harold 4.mp4" autoplay loop muted playsinline></video>
+          </div>
+          <div style="font-size: 0.8vw; color: var(--body-text); padding: 0 1.25vw; margin-top: 0.5vh; text-align: center;">
+            Credits: Clips from "Harold and the Purple Crayon" read aloud by Storytime Sunshine on YouTube.
+          </div>
         </div>
       </div>
     </section>
@@ -75,50 +85,10 @@
 
     <!-- ==================== SLIDE 3 ==================== -->
     <section class="slide section-target">
-      <h2 class="slide-title">3. Parts of Language</h2>
-      <div class="split-layout left-text">
-        <div class="text-box">
-          <!-- SLIDE 3: TEXT CONTENT GOES HERE -->
-          <p>difference between <u>langue</u> (the overarching rules and structure of a language) and <u>parole</u> (a specific, individual utterance made using those rules)</p>
-          <br>
-          <p><strong>language</strong></p>
-          <ul>
-            <li><strong>vocabulary</strong> = primitives, what are the indivisible base units?</li>
-            <li><strong>grammar</strong> = syntax, rules, engines, constraints that dictate how those units can be combined and interact</li>
-          </ul>
-          <br>
-          <p>Examples table:</p>
-          <table class="examples-table">
-            <thead>
-              <tr>
-                <th>Artifact<br>[The medium]</th>
-                <th>Vocabulary<br>[primitives]</th>
-                <th>Syntax<br>[grammar]</th>
-                <th>language type</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="viewport">
-          <!-- SLIDE 3: VIEWPORT CONTENT GOES HERE -->
-        </div>
-      </div>
-    </section>
-    
-    <!-- ==================== SLIDE 4 ==================== -->
-    <section class="slide section-target">
-      <h2 class="slide-title">4. Communication between humans and computers and its evolution.</h2>
+      <h2 class="slide-title">3. Communication between humans and computers and its evolution.</h2>
       <div class="split-layout right-text">
         <div class="text-box">
-          <!-- SLIDE 4: TEXT CONTENT GOES HERE -->
+          <!-- SLIDE 3: TEXT CONTENT GOES HERE -->
           <p>Main trend: HCI constantly moves further towards Human modes of communication and language, and away from computer modes.</p>
           <br>
           <p>Language processing computation is reducing at the human end while is increasing on the computers end.</p>
@@ -143,45 +113,170 @@
           </table>
         </div>
         <div class="viewport">
+          <!-- SLIDE 3: VIEWPORT CONTENT GOES HERE -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 4 ==================== -->
+    <section class="slide section-target">
+      <h2 class="slide-title">4. Communication with AI, what they look like right now</h2>
+      <div class="split-layout left-text">
+        <div class="text-box">
+          <!-- SLIDE 4: TEXT CONTENT GOES HERE -->
+          <p>The chatbot text interface is not sufficient to communicate form, spatial, shapes related data, drawing is required as a way of communication.</p>
+        </div>
+        <div class="viewport">
           <!-- SLIDE 4: VIEWPORT CONTENT GOES HERE -->
         </div>
       </div>
     </section>
 
     <!-- ==================== SLIDE 5 ==================== -->
-    <section class="slide section-target">
-      <h2 class="slide-title">5. Communication with AI, what they look like right now</h2>
-      <div class="split-layout left-text">
-        <div class="text-box">
-          <!-- SLIDE 5: TEXT CONTENT GOES HERE -->
-          <p>The chatbot text interface is not sufficient to communicate form, spatial, shapes related data, drawing is required as a way of communication.</p>
+    <section class="slide section-target" id="slide-5">
+      <h2 class="slide-title">5. Reference and Inspirational projects</h2>
+      
+      <div class="split-layout slide5-layout" style="position: relative;">
+        <!-- Navigation Buttons & Counter -->
+        <button id="slide5-prev" class="slide5-nav-btn slide5-prev-btn">&lt;</button>
+        <button id="slide5-next" class="slide5-nav-btn slide5-next-btn">&gt;</button>
+        <span id="slide5-counter" class="slide5-counter-text">Page 1 / 7</span>
+        
+        <!-- PAGE 1 -->
+        <div class="slide5-page" id="slide5-page1">
+          <!-- Headings -->
+          <div class="slide5-headings">
+            <h3>Past Projects</h3>
+            <h3>Active Projects</h3>
+          </div>
+          
+          <!-- Columns layout -->
+          <div class="slide5-columns">
+            <!-- Left column (Past Projects) - 4 cells -->
+            <div class="slide5-grid-left">
+              <div class="slide5-cell-container">
+                <video src="videos/silk-krazy.mp4#t=7" playsinline controls class="slide5-video"></video>
+                <div class="slide5-cell-caption">SILK: Sketching Interfaces Like Krazy</div>
+              </div>
+              <div class="slide5-cell-container">
+                <video src="videos/draw-talk.mp4#t=6" playsinline controls class="slide5-video"></video>
+                <div class="slide5-cell-caption">DrawTalking</div>
+              </div>
+              <div class="slide5-cell-container">
+                <video src="videos/control-net.mp4#t=0.01" playsinline controls class="slide5-video"></video>
+                <div class="slide5-cell-caption">Stable Diffusion: ControlNet</div>
+              </div>
+              <div class="slide5-cell-container">
+                <video src="videos/robo-sketch.mp4#t=23" playsinline controls class="slide5-video"></video>
+                <div class="slide5-cell-caption">RoboSketch</div>
+              </div>
+            </div>
+            
+            <!-- Right column (Active Projects) - 2 cells -->
+            <div class="slide5-grid-right">
+              <div class="slide5-cell-container">
+                <img src="imgs/claude-design-draw-img1.webp" alt="Claude Design Draw" class="slide5-image">
+                <div class="slide5-cell-caption">Claude Design - Canvas Draw</div>
+              </div>
+              <div class="slide5-cell-container">
+                <img src="imgs/sketch-rhino-img1.png" alt="Sketch Rhino" class="slide5-image">
+                <div class="slide5-cell-caption">Rhino 9 BETA - Markup Tool</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="viewport">
-          <!-- SLIDE 5: VIEWPORT CONTENT GOES HERE -->
-        </div>
-      </div>
-    </section>
 
-    <!-- ==================== SLIDE 6 ==================== -->
-    <section class="slide section-target">
-      <h2 class="slide-title">6. Reference and Inspirational projects</h2>
-      <div class="split-layout right-text">
-        <div class="text-box">
-          <!-- SLIDE 6: TEXT CONTENT GOES HERE -->
-          <p>Videos showing 6 projects where drawing is used for interaction or communication.</p>
+        <!-- Placeholder for other 6 pages -->
+        <div class="slide5-page slide5-page-split" id="slide5-page2" style="display: none;">
+          <div class="viewport">
+            <!-- Left content box -->
+          </div>
+          <div class="text-box">
+            <!-- Right text box -->
+            <p>Page 2 Notes</p>
+          </div>
         </div>
-        <div class="viewport">
-          <!-- SLIDE 6: VIEWPORT CONTENT GOES HERE -->
+        
+        <div class="slide5-page slide5-page-split" id="slide5-page3" style="display: none;">
+          <div class="viewport">
+          </div>
+          <div class="text-box">
+            <p>Page 3 Notes</p>
+          </div>
         </div>
+        
+        <div class="slide5-page slide5-page-split" id="slide5-page4" style="display: none;">
+          <div class="viewport">
+          </div>
+          <div class="text-box">
+            <p>Page 4 Notes</p>
+          </div>
+        </div>
+        
+        <div class="slide5-page slide5-page-split" id="slide5-page5" style="display: none;">
+          <div class="viewport">
+          </div>
+          <div class="text-box">
+            <p>Page 5 Notes</p>
+          </div>
+        </div>
+        
+        <div class="slide5-page slide5-page-split" id="slide5-page6" style="display: none;">
+          <div class="viewport">
+          </div>
+          <div class="text-box">
+            <p>Page 6 Notes</p>
+          </div>
+        </div>
+        
+        <div class="slide5-page slide5-page-split" id="slide5-page7" style="display: none;">
+          <div class="viewport">
+          </div>
+          <div class="text-box">
+            <p>Page 7 Notes</p>
+          </div>
+        </div>
+
       </div>
+      
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          let currentPage = 1;
+          const totalPages = 7;
+          const prevBtn = document.getElementById('slide5-prev');
+          const nextBtn = document.getElementById('slide5-next');
+          const counter = document.getElementById('slide5-counter');
+
+          function updateSlide5Page() {
+            for (let i = 1; i <= totalPages; i++) {
+              document.getElementById('slide5-page' + i).style.display = (i === currentPage) ? 'flex' : 'none';
+            }
+            counter.innerText = 'Page ' + currentPage + ' / ' + totalPages;
+          }
+
+          prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+              currentPage--;
+              updateSlide5Page();
+            }
+          });
+
+          nextBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+              currentPage++;
+              updateSlide5Page();
+            }
+          });
+        });
+      </script>
     </section>
     
-    <!-- ==================== SLIDE 7 ==================== -->
+    <!-- ==================== SLIDE 6 ==================== -->
     <section class="slide section-target">
-      <h2 class="slide-title">7. Examples of Drawing Communication</h2>
+      <h2 class="slide-title">6. Examples of Drawing Communication</h2>
       <div class="split-layout left-text">
         <div class="text-box">
-          <!-- SLIDE 7: TEXT CONTENT GOES HERE -->
+          <!-- SLIDE 6: TEXT CONTENT GOES HERE -->
           <p>Examples of drawing communication inside CAD software, 3D viewport</p>
           <br>
           <p>, what benefits in various industries time, money, effort</p>
@@ -194,17 +289,17 @@
           <p>- etc..</p>
         </div>
         <div class="viewport">
-          <!-- SLIDE 7: VIEWPORT CONTENT GOES HERE -->
+          <!-- SLIDE 6: VIEWPORT CONTENT GOES HERE -->
         </div>
       </div>
     </section>
 
-    <!-- ==================== SLIDE 8 ==================== -->
+    <!-- ==================== SLIDE 7 ==================== -->
     <section class="slide section-target">
-      <h2 class="slide-title">8. Work I have done: testing out/experimenting with different ways of 3D drawing communication.</h2>
+      <h2 class="slide-title">7. Work I have done: testing out/experimenting with different ways of 3D drawing communication.</h2>
       <div class="split-layout right-text">
         <div class="text-box">
-          <!-- SLIDE 8: TEXT CONTENT GOES HERE -->
+          <!-- SLIDE 7: TEXT CONTENT GOES HERE -->
           <p>1) direct 3D "pipe" drawing<br>&nbsp;&nbsp;&nbsp;&nbsp;drawing planes, objects in 3D space</p>
           <br>
           <p>2) 2D raster drawings<br>&nbsp;&nbsp;&nbsp;&nbsp;inserted onto planes in 3D viewport</p>
@@ -214,21 +309,21 @@
           <p>Devices required, Changes in workspace desk setups</p>
         </div>
         <div class="viewport">
-          <!-- SLIDE 8: VIEWPORT CONTENT GOES HERE -->
+          <!-- SLIDE 7: VIEWPORT CONTENT GOES HERE -->
         </div>
       </div>
     </section>
     
-    <!-- ==================== SLIDE 9 ==================== -->
+    <!-- ==================== SLIDE 8 ==================== -->
     <section class="slide section-target">
-      <h2 class="slide-title">9. Work to do in following semesters.</h2>
+      <h2 class="slide-title">8. Work to do in following semesters.</h2>
       <div class="split-layout left-text">
         <div class="text-box">
-          <!-- SLIDE 9: TEXT CONTENT GOES HERE -->
+          <!-- SLIDE 8: TEXT CONTENT GOES HERE -->
           <p>What paths/avenues I can take in further exploration and development of this topic.</p>
         </div>
         <div class="viewport">
-          <!-- SLIDE 9: VIEWPORT CONTENT GOES HERE -->
+          <!-- SLIDE 8: VIEWPORT CONTENT GOES HERE -->
         </div>
       </div>
     </section>
@@ -239,5 +334,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <script src="js/human-spectrum-language.js"></script>
+  <script src="js/draw-tool.js"></script>
 </body>
 </html>

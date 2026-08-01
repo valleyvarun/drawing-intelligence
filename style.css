@@ -111,8 +111,7 @@ body {
 }
 
 .text-box {
-  min-width: 25%;
-  max-width: 50%; /* optional: prevents it from taking up the full screen */
+  max-width: 25%;
   flex-shrink: 0;
   padding: 1.2vh 1.2vw;
   overflow: auto;
@@ -189,15 +188,230 @@ body {
 
 .section-nav {
   position: fixed;
-  right: 2.5vw;
-  bottom: 2.5vh;
+  right: 5vw;
+  top: 9vh; /* Positoned below header which is 6.5vh */
   z-index: 6;
   display: flex;
   gap: 0.5vw;
 }
 
+.left-nav {
+  position: fixed;
+  left: 2.5vw;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vw;
+}
+
+.left-nav button,
 .section-nav button {
   display: grid;
+  place-items: center;
+  width: 2.25vw;
+  height: 2.25vw;
+  font-family: inherit;
+  font-size: 1.25vw;
+  font-weight: 700;
+  color: var(--foreground);
+  background: var(--background);
+  border: 0.08vw solid var(--rule);
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.left-nav button:hover,
+.section-nav button:hover {
+  background: var(--rule);
+}
+
+.left-nav button.active-tool {
+  background: #a62e96;
+  color: white;
+  border-color: #a62e96;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  width: 100%;
+  height: calc(100% - 3vh); /* Leave room for credits below */
+  gap: 0.5vw; /* Reduced from 1.25vw to close gap between pairs */
+  padding: 1.25vw;
+  padding-bottom: 0;
+}
+
+.video-grid video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 0.08vw solid var(--rule);
+}
+
+/* Slide 5 Specific Styles */
+.slide5-counter-text {
+  position: absolute;
+  top: 1vh;
+  right: 0;
+  width: 4.5vw; /* Match the 4.5vw padding on the right edge */
+  text-align: center;
+  font-weight: 700;
+  font-family: monospace;
+  font-size: 0.65vw; /* Made even smaller to fit */
+  z-index: 10;
+  white-space: nowrap; /* Ensure text doesn't wrap */
+}
+
+.slide5-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  width: 2.5vw;
+  height: 2.5vw;
+  font-weight: bold;
+  font-size: 1.2vw;
+  background: var(--background);
+  color: var(--foreground);
+  border: 0.08vw solid var(--rule);
+  border-radius: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+}
+
+.slide5-nav-btn:hover {
+  background: var(--rule);
+}
+
+.slide5-prev-btn {
+  left: 1vw;
+}
+
+.slide5-next-btn {
+  right: 1vw;
+}
+
+.slide5-layout {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.slide5-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 1.2vh 4.5vw; /* Increased side padding to make room for buttons */
+  min-height: 0;
+}
+
+.slide5-page-split {
+  flex-direction: row;
+  padding: 0 4.5vw; /* Maintain the outer padding to keep away from arrows */
+}
+
+/* Ensure border is on the left side of text box and right side of viewport */
+.slide5-page-split .text-box {
+  border-left: 0.08vw solid var(--rule);
+  border-right: 0.08vw solid var(--rule); /* Box it off from the right arrow padding zone */
+  width: 25%; /* Fixed width in percentage */
+  min-width: 0;
+  max-width: none;
+}
+
+.slide5-page-split .viewport {
+  border-left: 0.08vw solid var(--rule); /* Box it off from the left arrow padding zone */
+}
+
+.slide5-headings {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5vw;
+  margin-bottom: 1vh;
+  padding: 0 0.2vw;
+}
+
+.slide5-headings h3 {
+  margin: 0;
+  font-size: 1vw;
+  text-decoration: underline;
+}
+
+.slide5-columns {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5vw;
+  flex: 1;
+  min-height: 0;
+}
+
+.slide5-grid-left {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0.5vw;
+  height: 100%;
+  min-height: 0;
+}
+
+.slide5-grid-right {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0.5vw;
+  height: 100%;
+  min-height: 0;
+}
+
+.slide5-video,
+.slide5-image,
+.slide5-empty-cell {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.slide5-cell-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  gap: 0.25vh;
+}
+
+.slide5-cell-caption {
+  font-size: 0.8vw;
+  text-align: center;
+  color: var(--body-text);
+  font-family: Georgia, "Times New Roman", serif;
+  height: 2vh; /* Fixed height for the caption area */
+  flex-shrink: 0;
+}
+
+.slide5-video,
+.slide5-image {
+  object-fit: contain;
+  background: white;
+  border: 0.08vw solid var(--rule);
+}
+
+.slide5-empty-cell {
+  border: 0.08vw dashed var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--rule);
+  font-style: italic;
+}
   place-items: center;
   width: 2.4vw;
   min-width: 32px;
