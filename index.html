@@ -188,51 +188,88 @@
 
         <!-- Placeholder for other 6 pages -->
         <div class="slide5-page slide5-page-split" id="slide5-page2" style="display: none;">
-          <div class="viewport">
+          <div class="viewport" style="display: flex; justify-content: center; align-items: center; background-color: #000;">
             <!-- Left content box -->
+            <video src="videos/silk-krazy.mp4" class="slide5-video" muted playsinline data-autoplay="true" style="height: 90%; width: auto; max-width: 100%;"></video>
           </div>
           <div class="text-box">
             <!-- Right text box -->
-            <p>Page 2 Notes</p>
+            <div class="slide5-headings" style="display: block;">
+              <h3>SILK: Sketching Interfaces Like Krazy</h3>
+            </div>
+            <p><em>by James A. Landay PhD at Carnegie Mellon University (CMU)</em></p>
+            <br>
+            <p>SILK is an interface sketching system where you can draw UI elements like buttons or sliders by hand, and the system recognizes them and makes them interactive. It helps designers stay in the sketching phase longer before moving to programming the UI elements.</p>
           </div>
         </div>
         
         <div class="slide5-page slide5-page-split" id="slide5-page3" style="display: none;">
-          <div class="viewport">
+          <div class="viewport" style="display: flex; justify-content: center; align-items: center; background-color: #000;">
+            <video src="videos/draw-talk.mp4" class="slide5-video" muted playsinline data-autoplay="true" style="height: 90%; width: auto; max-width: 100%;"></video>
           </div>
           <div class="text-box">
-            <p>Page 3 Notes</p>
+            <div class="slide5-headings" style="display: block;">
+              <h3>DrawTalking</h3>
+            </div>
+            <p><em>by Karl Toby Rosenberg</em></p>
+            <br>
+            <p>DrawTalking is an interface where sketches, speech, and text labels are correlated with one another. It learns to associate sketches with objects and verbs with specific movements, allowing users to animate scenes using spoken commands.</p>
           </div>
         </div>
         
         <div class="slide5-page slide5-page-split" id="slide5-page4" style="display: none;">
-          <div class="viewport">
+          <div class="viewport" style="display: flex; justify-content: center; align-items: center; background-color: #000;">
+            <video src="videos/control-net.mp4" class="slide5-video" muted playsinline data-autoplay="true" style="height: 90%; width: auto; max-width: 100%;"></video>
           </div>
           <div class="text-box">
-            <p>Page 4 Notes</p>
+            <div class="slide5-headings" style="display: block;">
+              <h3>Stable Diffusion: ControlNet</h3>
+            </div>
+            <p>Stable Diffusion with ControlNet allows you to generate images by providing sketches. The model identifies the lines in the input image, understands the structure you’ve drawn, and generates detailed, styled images based on it. It demonstrates how AI can respond meaningfully to sketch input.</p>
           </div>
         </div>
         
         <div class="slide5-page slide5-page-split" id="slide5-page5" style="display: none;">
-          <div class="viewport">
+          <div class="viewport" style="display: flex; justify-content: center; align-items: center; background-color: #000;">
+            <video src="videos/robo-sketch.mp4" class="slide5-video" muted playsinline data-autoplay="true" style="height: 90%; width: auto; max-width: 100%;"></video>
           </div>
           <div class="text-box">
-            <p>Page 5 Notes</p>
+            <div class="slide5-headings" style="display: block;">
+              <h3>RoboSketch</h3>
+            </div>
+            <p><em>by a team of researchers from KAIST (Korea Advanced Institute of Science and Technology)</em></p>
+            <br>
+            <p>RoboSketch is an interactive tool that lets you draw directly in 3D space along different planes. The sketch creates a kind of skeletal framework, which can then be animated to explore motion and form.</p>
           </div>
         </div>
         
         <div class="slide5-page slide5-page-split" id="slide5-page6" style="display: none;">
-          <div class="viewport">
+          <div class="viewport" style="display: flex; justify-content: center; align-items: center; background-color: #000;">
+            <img src="imgs/claude-design-draw-img2.png" alt="Claude Design Draw" style="height: 90%; width: auto; max-width: 100%; object-fit: contain;">
           </div>
           <div class="text-box">
+            <div class="slide5-headings" style="display: block;">
+              <h3>Claude Design - Canvas Draw</h3>
+            </div>
+            <p><em>by Anthropic</em></p>
+            <br>
             <p>Page 6 Notes</p>
           </div>
         </div>
         
         <div class="slide5-page slide5-page-split" id="slide5-page7" style="display: none;">
-          <div class="viewport">
+          <div class="viewport" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 1vw; padding: 1vw; background-color: #000; height: 100%; overflow: hidden;">
+            <img src="imgs/sketch-rhino-img1.png" alt="Rhino Sketch 1" style="width: 100%; height: 100%; object-fit: contain; min-height: 0;">
+            <img src="imgs/sketch-rhino-img2.png" alt="Rhino Sketch 2" style="width: 100%; height: 100%; object-fit: contain; min-height: 0;">
+            <img src="imgs/sketch-rhino-img3.png" alt="Rhino Sketch 3" style="width: 100%; height: 100%; object-fit: contain; min-height: 0;">
+            <img src="imgs/sketch-rhino-img4.jpg" alt="Rhino Sketch 4" style="width: 100%; height: 100%; object-fit: contain; min-height: 0;">
           </div>
           <div class="text-box">
+            <div class="slide5-headings" style="display: block;">
+              <h3>Rhino 9 BETA - Markup Tool</h3>
+            </div>
+            <p><em>by McNeel</em></p>
+            <br>
             <p>Page 7 Notes</p>
           </div>
         </div>
@@ -249,7 +286,19 @@
 
           function updateSlide5Page() {
             for (let i = 1; i <= totalPages; i++) {
-              document.getElementById('slide5-page' + i).style.display = (i === currentPage) ? 'flex' : 'none';
+              const page = document.getElementById('slide5-page' + i);
+              const isCurrent = (i === currentPage);
+              page.style.display = isCurrent ? 'flex' : 'none';
+              
+              const videos = page.querySelectorAll('video[data-autoplay="true"]');
+              videos.forEach(video => {
+                if (isCurrent) {
+                  video.play();
+                } else {
+                  video.pause();
+                  video.currentTime = 0;
+                }
+              });
             }
             counter.innerText = 'Page ' + currentPage + ' / ' + totalPages;
           }

@@ -63,15 +63,15 @@ if (viewport && THREE) {
 		const resetBtn = document.createElement("button");
 		resetBtn.innerText = "Reset View";
 		resetBtn.style.position = "absolute";
-		resetBtn.style.top = "10px";
-		resetBtn.style.right = "10px";
+		resetBtn.style.top = "1vh";
+		resetBtn.style.right = "1vw";
 		resetBtn.style.zIndex = "5";
-		resetBtn.style.padding = "5px 10px";
+		resetBtn.style.padding = "0.5vh 1vw";
 		resetBtn.style.fontFamily = "inherit";
 		resetBtn.style.fontWeight = "bold";
 		resetBtn.style.background = "var(--background, #000)";
 		resetBtn.style.color = "var(--foreground, #fff)";
-		resetBtn.style.border = "1px solid var(--rule, #333)";
+		resetBtn.style.border = "0.1vw solid var(--rule, #333)";
 		resetBtn.style.cursor = "pointer";
 		
 		resetBtn.addEventListener("mouseenter", () => {
