@@ -1,0 +1,103 @@
+.game-ui {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  height: 100%;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.game-ui .card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex: 1; /* allow the container to grow to its allowed limit */
+  min-height: 0; /* needed for flex children to shrink properly if nested inside other flex containers */
+}
+
+.game-ui .card-btn {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.game-ui .card {
+  height: 100%;
+  aspect-ratio: 2 / 3;
+  min-height: 12rem;
+  border: 2px solid var(--foreground, #000);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-ui .sliders-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.game-ui .slider-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.game-ui .slider-group label {
+  font-size: 0.65vw; /* matching the label size with the span texts below */
+}
+
+.game-ui .slider-with-labels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(8vw, 2fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5vw;
+  width: 100%;
+}
+
+.game-ui .slider-with-labels span {
+  font-size: 0.65vw; /* matching the label parameter word sizes */
+  font-weight: bold;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.game-ui .slider-with-labels .left-label {
+  text-align: right;
+}
+
+.game-ui .slider-with-labels .right-label {
+  text-align: left;
+}
+
+.game-ui .slider-with-labels input {
+  width: 100%;
+  min-width: 0;
+  accent-color: #a62e96; /* matching the painting brush purple */
+}
+
+.game-ui .slider-value {
+  width: 2vw;
+  height: 2vw;
+  border: 1px solid var(--rule, #333);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: inherit;
+  font-size: 0.65vw;
+  margin-top: 0.2vw;
+}
+
+.game-ui .plot-container {
+  display: flex;
+  justify-content: center;
+}
+
+.game-ui .plot-btn {
+  padding: 0.35vw 1.4vw;
+  font-size: 0.85vw;
+  cursor: pointer;
+}

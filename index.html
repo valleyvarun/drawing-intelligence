@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simple Slides</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/game-ui.css">
 </head>
 <body>
   <header class="site-header">
@@ -67,15 +68,65 @@
     <section class="slide section-target">
       <h2 class="slide-title">2. Spectrum of human language</h2>
       <div class="split-layout right-text">
-        <div class="text-box">
+        <div class="text-box" style="max-width: fit-content; min-width: 25%;">
           <!-- SLIDE 2: TEXT CONTENT GOES HERE -->
-          <p>3D Graph with types of languages placed at points in space</p>
-          <br>
-          <p>X axis &rarr; abstracted vs mimetic (language medium)</p>
-          <p>Y axis &rarr; perceptual vs conceptual (language meaning)</p>
-          <p>Z axis &rarr; ...1D relations &rarr; 5D relations...</p>
-          <br>
-          <p>W &rarr; interpretive vs deterministic</p>
+          <div class="game-ui">
+            
+            <!-- Top: Card with arrows -->
+            <div class="card-container">
+              <button class="card-btn">&lt;</button>
+              <div class="card">
+                Card
+              </div>
+              <button class="card-btn">&gt;</button>
+            </div>
+
+            <!-- Middle: 4 Sliders -->
+            <div class="sliders-container">
+              <div class="slider-group">
+                <label>X - Language Medium:</label>
+                <div class="slider-with-labels">
+                  <span class="left-label">Abstracted</span>
+                  <input type="range" id="slider-x" min="-10" max="10" step="0.5" value="0">
+                  <span class="right-label">Mimetic</span>
+                </div>
+                <div class="slider-value" id="value-x">0</div>
+              </div>
+              <div class="slider-group">
+                <label>Y - Language Meaning:</label>
+                <div class="slider-with-labels">
+                  <span class="left-label">Conceptual</span>
+                  <input type="range" id="slider-y" min="-10" max="10" step="0.5" value="0">
+                  <span class="right-label">Perceptual</span>
+                </div>
+                <div class="slider-value" id="value-y">0</div>
+              </div>
+              <div class="slider-group">
+                <label>Z - Data Structure:</label>
+                <div class="slider-with-labels">
+                  <span class="left-label">Dimensions</span>
+                  <input type="range" id="slider-z" min="0" max="6" step="0.5" value="0">
+                  <span class="right-label"></span>
+                </div>
+                <div class="slider-value" id="value-z">0</div>
+              </div>
+              <div class="slider-group">
+                <label>W - Language Precision:</label>
+                <div class="slider-with-labels">
+                  <span class="left-label">Interpretive</span>
+                  <input type="range" id="slider-w" min="-10" max="10" step="0.5" value="0">
+                  <span class="right-label">Deterministic</span>
+                </div>
+                <div class="slider-value" id="value-w">0</div>
+              </div>
+            </div>
+
+            <!-- Bottom: Plot button -->
+            <div class="plot-container">
+              <button class="plot-btn">Plot</button>
+            </div>
+            
+          </div>
         </div>
         <div class="viewport" id="human-spectrum-language-viewport">
           <!-- SLIDE 2: VIEWPORT CONTENT GOES HERE -->

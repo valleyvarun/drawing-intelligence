@@ -9,7 +9,7 @@ if (viewport && THREE) {
 	const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
 	camera.up.set(0, 0, 1);
 	camera.position.set(16.0, -18.0, 12.0);
-	camera.lookAt(0, 0, 0.6);
+	camera.lookAt(0, 0, 3.6); // Aim the camera above the origin to position the graph lower in view
 
 	const renderer = new THREE.WebGLRenderer({ antialias: true });
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -24,25 +24,31 @@ if (viewport && THREE) {
 	// XY Grid (X: -10 to 10, Y: -10 to 10)
 	graph.add(createGridLines('x', 'y', [-10, 10], [-10, 10], 10, 10, colorGrid));
 
-	// YZ Grid (Y: -10 to 10, Z: 0 to 10)
-	graph.add(createGridLines('y', 'z', [-10, 10], [0, 10], 10, 5, colorGrid));
+	// YZ Grid (Y: -10 to 10, Z levels: 0 to 6)
+	graph.add(createGridLines('y', 'z', [-10, 10], [0, 12], 10, 6, colorGrid));
 
-	// ZX Grid (Z: 0 to 10, X: -10 to 10)
-	graph.add(createGridLines('z', 'x', [0, 10], [-10, 10], 5, 10, colorGrid));
+	// ZX Grid (Z levels: 0 to 6, X: -10 to 10)
+	graph.add(createGridLines('z', 'x', [0, 12], [-10, 10], 6, 10, colorGrid));
 
 	graph.add(createAxis(new THREE.Vector3(-10.4, 0, 0), new THREE.Vector3(10.4, 0, 0), 0xd33f2f));
 	graph.add(createAxis(new THREE.Vector3(0, -10.4, 0), new THREE.Vector3(0, 10.4, 0), 0x2f9e44));
 	// Z-axis only has positive part and is scaled differently
-	graph.add(createAxis(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 10.4), 0x2f66d0, true));
+	graph.add(createAxis(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 12.4), 0x2f66d0, true));
+
+	// Mark the graph origin with a small purple sphere
+	const sphereGeometry = new THREE.SphereGeometry(0.1, 24, 16);
+	const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xa62e96 });
+	let activeSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+	graph.add(activeSphere);
 
 	graph.add(createLabel("mimetic", new THREE.Vector3(11.2, 0, 0), 0xd33f2f));
 	graph.add(createLabel("abstracted", new THREE.Vector3(-11.4, 0, 0), 0xd33f2f));
 	graph.add(createLabel("perceptual", new THREE.Vector3(0, 11.4, 0), 0x2f9e44));
 	graph.add(createLabel("conceptual", new THREE.Vector3(0, -11.4, 0), 0x2f9e44));
-	graph.add(createLabel("Z", new THREE.Vector3(0, 0, 11.0), 0x2f66d0));
+	graph.add(createLabel("Data Structure", new THREE.Vector3(0, 0, 13.0), 0x2f66d0));
 
 	// Add '0' at the origin in grey
-	graph.add(createLabel("0", new THREE.Vector3(-0.4, 0.4, 0), 0x666666, true));
+	graph.add(createLabel("0", new THREE.Vector3(0, 0, -0.75), 0x666666, true));
 
 	const controls = THREE.OrbitControls ? new THREE.OrbitControls(camera, renderer.domElement) : null;
 	if (controls) {
@@ -55,7 +61,7 @@ if (viewport && THREE) {
 		controls.enableZoom = true;
 		controls.enableRotate = true;
 		controls.screenSpacePanning = true;
-		controls.target.set(0, 0, 0.6);
+		controls.target.set(0, 0, 3.6);
 		controls.addEventListener("change", render);
 		controls.update();
 
@@ -84,7 +90,7 @@ if (viewport && THREE) {
 		resetBtn.addEventListener("click", () => {
 			camera.position.set(16.0, -18.0, 12.0);
 			camera.up.set(0, 0, 1);
-			controls.target.set(0, 0, 0.6);
+			controls.target.set(0, 0, 3.6);
 			controls.update();
 			render();
 		});
@@ -114,6 +120,55 @@ if (viewport && THREE) {
 	function render() {
 		renderer.render(scene, camera);
 	}
+
+	// Update the UI values when sliders move
+	const axes = ['x', 'y', 'z', 'w'];
+	const sliders = {};
+	const valueBoxes = {};
+	axes.forEach(axis => {
+		const slider = document.getElementById(`slider-${axis}`);
+		const valueBox = document.getElementById(`value-${axis}`);
+		if (slider && valueBox) {
+			sliders[axis] = slider;
+			valueBoxes[axis] = valueBox;
+			slider.addEventListener("input", () => {
+				valueBox.textContent = slider.value;
+				updateSpherePosition();
+			});
+		}
+	});
+
+	// Move the sphere live while retaining W for later game behavior
+	function updateSpherePosition() {
+		if (!axes.every(axis => sliders[axis])) {
+			return;
+		}
+
+		const values = Object.fromEntries(
+			axes.map(axis => [axis, Number(sliders[axis].value)])
+		);
+
+		activeSphere.position.set(values.x, values.y, values.z * 2);
+		activeSphere.userData.languagePrecision = values.w;
+		render();
+	}
+
+	// Commit the current sphere and reset a new active sphere at the origin
+	const plotButton = document.querySelector(".game-ui .plot-btn");
+	if (plotButton) {
+		plotButton.addEventListener("click", () => {
+			activeSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+			graph.add(activeSphere);
+
+			axes.forEach(axis => {
+				sliders[axis].value = "0";
+				valueBoxes[axis].textContent = "0";
+			});
+
+			updateSpherePosition();
+		});
+	}
+
 }
 
 function createGridLines(axis1, axis2, range1, range2, divisions1, divisions2, color) {
@@ -175,7 +230,7 @@ function createAxis(start, end, color, isZAxis = false) {
 	
 	// Create tick marks and number labels
 	if (isZAxis) {
-		for (let i = 1; i <= 5; i++) {
+		for (let i = 1; i <= 6; i++) {
 			const positionScale = i * 2;
 			const tickPos = origin.clone().add(direction.clone().multiplyScalar(positionScale));
 			const tick = new THREE.Mesh(tickGeometry, tickMaterial);
@@ -184,7 +239,7 @@ function createAxis(start, end, color, isZAxis = false) {
 			group.add(tick);
 
 			const labelOffset = new THREE.Vector3(-0.75, 0, 0);
-			const numberLabel = createLabel(i.toString(), tickPos.clone().add(labelOffset), color, true);
+			const numberLabel = createLabel(`${i}D`, tickPos.clone().add(labelOffset), color, true);
 			group.add(numberLabel);
 		}
 	} else {
@@ -227,26 +282,18 @@ function createAxis(start, end, color, isZAxis = false) {
 function createLabel(text, position, color, isSmall = false) {
 	const canvas = document.createElement("canvas");
 	const context = canvas.getContext("2d");
-	
-	if (isSmall) {
-		canvas.width = 128;
-		canvas.height = 128;
-	} else {
-		// Make canvas wider to fit long text like "conceptual" or "abstracted"
-		canvas.width = 512;
-		canvas.height = 128;
-	}
+	const font = "700 80px Courier New, monospace";
+	const canvasHeight = 128;
+	const horizontalPadding = isSmall ? 32 : 64;
+
+	// Size the label canvas from its text so longer labels render without clipping
+	context.font = font;
+	canvas.width = Math.ceil(context.measureText(text).width + horizontalPadding);
+	canvas.height = canvasHeight;
 
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	context.fillStyle = `#${color.toString(16).padStart(6, "0")}`;
-	
-	if (isSmall) {
-		context.font = "700 80px Courier New, monospace";
-	} else {
-		// Adjust font size slightly if necessary to ensure it all fits
-		context.font = "700 80px Courier New, monospace";
-	}
-	
+	context.font = font;
 	context.textAlign = "center";
 	context.textBaseline = "middle";
 	context.fillText(text, canvas.width / 2, canvas.height / 2);
@@ -255,13 +302,9 @@ function createLabel(text, position, color, isSmall = false) {
 	const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
 	const sprite = new THREE.Sprite(material);
 	sprite.position.copy(position);
-	
-	if (isSmall) {
-		sprite.scale.set(0.55, 0.55, 0.55);
-	} else {
-		// Increase X scale to accommodate the wider canvas proportion (4x wider than tall)
-		sprite.scale.set(2.8, 0.7, 0.7);
-	}
+
+	const labelHeight = isSmall ? 0.55 : 0.7;
+	sprite.scale.set(labelHeight * (canvas.width / canvas.height), labelHeight, labelHeight);
 
 	return sprite;
 }
