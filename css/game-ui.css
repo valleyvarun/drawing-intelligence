@@ -26,11 +26,17 @@
   height: 100%;
   aspect-ratio: 2 / 3;
   min-height: 12rem;
-  border: 2px solid var(--foreground, #000);
+  border: 5px solid #a62e96;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.game-ui .card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .game-ui .sliders-container {

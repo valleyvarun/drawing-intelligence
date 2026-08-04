@@ -35,11 +35,32 @@ if (viewport && THREE) {
 	// Z-axis only has positive part and is scaled differently
 	graph.add(createAxis(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 12.4), 0x2f66d0, true));
 
-	// Mark the graph origin with a small purple sphere
+	// Create a movable marker containing a sphere and its card
 	const sphereGeometry = new THREE.SphereGeometry(0.1, 24, 16);
 	const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xa62e96 });
-	let activeSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-	graph.add(activeSphere);
+	const cardSources = Array.from({ length: 5 }, (_, index) => `cards/${index + 1}.png`);
+	const textureLoader = new THREE.TextureLoader();
+	const cardTextures = cardSources.map(source => textureLoader.load(source, render));
+
+	function createMarker(cardIndex) {
+		const marker = new THREE.Group();
+		const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+		const card = new THREE.Sprite(new THREE.SpriteMaterial({
+			map: cardTextures[cardIndex],
+			transparent: true
+		}));
+
+		card.position.set(0, 0, 0.9);
+		card.scale.set(0.8, 1.2, 1);
+		marker.add(sphere, card);
+		graph.add(marker);
+
+		return { marker, card };
+	}
+
+	let activeMarker = createMarker(0);
+	let plottedCards = [];
+	let availableCardIndexes = cardSources.map((_, index) => index);
 
 	graph.add(createLabel("mimetic", new THREE.Vector3(11.2, 0, 0), 0xd33f2f));
 	graph.add(createLabel("abstracted", new THREE.Vector3(-11.4, 0, 0), 0xd33f2f));
@@ -121,6 +142,35 @@ if (viewport && THREE) {
 		renderer.render(scene, camera);
 	}
 
+	// Cycle through the available game cards
+	const cardImage = document.querySelector(".game-ui .card img");
+	const previousCardButton = document.querySelector(".game-ui .card-prev");
+	const nextCardButton = document.querySelector(".game-ui .card-next");
+	const plotButton = document.querySelector(".game-ui .plot-btn");
+	let currentDeckPosition = 0;
+	let currentCardIndex = 0;
+
+	function showCard(deckPosition) {
+		if (!availableCardIndexes.length || !activeMarker) {
+			return;
+		}
+
+		currentDeckPosition = (
+			deckPosition + availableCardIndexes.length
+		) % availableCardIndexes.length;
+		currentCardIndex = availableCardIndexes[currentDeckPosition];
+		cardImage.src = cardSources[currentCardIndex];
+		cardImage.alt = `Card ${currentCardIndex + 1}`;
+		activeMarker.card.material.map = cardTextures[currentCardIndex];
+		activeMarker.card.material.needsUpdate = true;
+		resetSliders();
+	}
+
+	if (cardImage && previousCardButton && nextCardButton) {
+		previousCardButton.addEventListener("click", () => showCard(currentDeckPosition - 1));
+		nextCardButton.addEventListener("click", () => showCard(currentDeckPosition + 1));
+	}
+
 	// Update the UI values when sliders move
 	const axes = ['x', 'y', 'z', 'w'];
 	const sliders = {};
@@ -140,34 +190,170 @@ if (viewport && THREE) {
 
 	// Move the sphere live while retaining W for later game behavior
 	function updateSpherePosition() {
-		if (!axes.every(axis => sliders[axis])) {
+		if (!activeMarker || !axes.every(axis => sliders[axis])) {
 			return;
 		}
 
-		const values = Object.fromEntries(
-			axes.map(axis => [axis, Number(sliders[axis].value)])
-		);
+		const values = getSliderValues();
 
-		activeSphere.position.set(values.x, values.y, values.z * 2);
-		activeSphere.userData.languagePrecision = values.w;
+		activeMarker.marker.position.set(values.x, values.y, values.z * 2);
+		activeMarker.marker.userData.languagePrecision = values.w;
 		render();
 	}
 
-	// Commit the current sphere and reset a new active sphere at the origin
-	const plotButton = document.querySelector(".game-ui .plot-btn");
+	function getSliderValues() {
+		return Object.fromEntries(
+			axes.map(axis => [axis, Number(sliders[axis].value)])
+		);
+	}
+
+	function resetSliders() {
+		axes.forEach(axis => {
+			sliders[axis].value = "0";
+			valueBoxes[axis].textContent = "0";
+		});
+
+		updateSpherePosition();
+	}
+
+	function setDeckEnabled(enabled) {
+		previousCardButton.disabled = !enabled;
+		nextCardButton.disabled = !enabled;
+		plotButton.disabled = !enabled;
+		axes.forEach(axis => {
+			sliders[axis].disabled = !enabled;
+		});
+		if (enabled) {
+			cardImage.style.visibility = "visible";
+			cardImage.src = cardSources[currentCardIndex];
+			cardImage.alt = `Card ${currentCardIndex + 1}`;
+		} else {
+			cardImage.style.visibility = "hidden";
+			cardImage.removeAttribute("src");
+			cardImage.alt = "";
+		}
+	}
+
+	function restorePlottedCard(cardPosition) {
+		const cardIndex = cardPosition.card - 1;
+		if (!cardTextures[cardIndex]) {
+			return;
+		}
+
+		const restoredMarker = createMarker(cardIndex);
+		restoredMarker.marker.position.set(cardPosition.x, cardPosition.y, cardPosition.z * 2);
+		restoredMarker.marker.userData.languagePrecision = cardPosition.w;
+	}
+
+	let nextSnapshotNumber = Number(localStorage.getItem("nextCardSnapshotNumber")) || 1;
+
+	async function loadLatestSnapshot() {
+		try {
+			const directoryResponse = await fetch("cards/json/", { cache: "no-store" });
+			if (!directoryResponse.ok) {
+				return;
+			}
+
+			const directoryListing = await directoryResponse.text();
+			const snapshotNumbers = Array.from(
+				directoryListing.matchAll(/(?:href=["'][^"']*\/)?(\d+)_cards_position\.json/gi),
+				match => Number(match[1])
+			);
+			if (!snapshotNumbers.length) {
+				return;
+			}
+
+			const latestSnapshotNumber = Math.max(...snapshotNumbers);
+			const snapshotResponse = await fetch(
+				`cards/json/${latestSnapshotNumber}_cards_position.json`,
+				{ cache: "no-store" }
+			);
+			if (!snapshotResponse.ok) {
+				throw new Error(`Unable to load card positions (${snapshotResponse.status})`);
+			}
+
+			const latestSnapshot = await snapshotResponse.json();
+			nextSnapshotNumber = latestSnapshotNumber + 1;
+			localStorage.setItem("nextCardSnapshotNumber", String(nextSnapshotNumber));
+
+			plottedCards = Array.isArray(latestSnapshot.cards) ? latestSnapshot.cards : [];
+			plottedCards.forEach(restorePlottedCard);
+
+			const plottedCardNumbers = new Set(plottedCards.map(card => card.card));
+			availableCardIndexes = cardSources
+				.map((_, index) => index)
+				.filter(index => !plottedCardNumbers.has(index + 1));
+
+			if (availableCardIndexes.length) {
+				currentDeckPosition = 0;
+				showCard(0);
+			} else {
+				graph.remove(activeMarker.marker);
+				activeMarker = null;
+				setDeckEnabled(false);
+				render();
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	async function saveSnapshot(cards) {
+		const fileName = `${nextSnapshotNumber}_cards_position.json`;
+		const file = new Blob([JSON.stringify({ cards }, null, 2)], {
+			type: "application/json"
+		});
+		const downloadUrl = URL.createObjectURL(file);
+		const downloadLink = document.createElement("a");
+		downloadLink.href = downloadUrl;
+		downloadLink.download = fileName;
+		downloadLink.click();
+		URL.revokeObjectURL(downloadUrl);
+
+		nextSnapshotNumber++;
+		localStorage.setItem("nextCardSnapshotNumber", String(nextSnapshotNumber));
+	}
+
+	// Save and commit the current marker, then remove its card from the deck
 	if (plotButton) {
-		plotButton.addEventListener("click", () => {
-			activeSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-			graph.add(activeSphere);
+		plotButton.addEventListener("click", async () => {
+			if (!activeMarker) {
+				return;
+			}
 
-			axes.forEach(axis => {
-				sliders[axis].value = "0";
-				valueBoxes[axis].textContent = "0";
-			});
+			const position = getSliderValues();
+			const nextPlottedCards = [
+				...plottedCards,
+				{ card: currentCardIndex + 1, ...position }
+			];
 
-			updateSpherePosition();
+			plotButton.disabled = true;
+			try {
+				await saveSnapshot(nextPlottedCards);
+				plottedCards = nextPlottedCards;
+				availableCardIndexes.splice(currentDeckPosition, 1);
+
+				if (!availableCardIndexes.length) {
+					activeMarker = null;
+					setDeckEnabled(false);
+					render();
+					return;
+				}
+
+				currentDeckPosition %= availableCardIndexes.length;
+				currentCardIndex = availableCardIndexes[currentDeckPosition];
+				activeMarker = createMarker(currentCardIndex);
+				showCard(currentDeckPosition);
+				plotButton.disabled = false;
+			} catch (error) {
+				console.error(error);
+				window.alert(error.message);
+				plotButton.disabled = false;
+			}
 		});
 	}
+
+	loadLatestSnapshot();
 
 }
 
