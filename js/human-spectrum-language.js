@@ -1,4 +1,5 @@
 (() => {
+const USE_X_CARD_POSITIONS = true;
 const THREE = window.THREE;
 const viewport = document.getElementById("human-spectrum-language-viewport");
 
@@ -249,23 +250,30 @@ if (viewport && THREE) {
 
 	async function loadLatestSnapshot() {
 		try {
-			const directoryResponse = await fetch("cards/json/", { cache: "no-store" });
-			if (!directoryResponse.ok) {
-				return;
+			let latestSnapshotNumber = null;
+			let snapshotPath = "cards/json/x_cards_position.json";
+
+			if (!USE_X_CARD_POSITIONS) {
+				const directoryResponse = await fetch("cards/json/", { cache: "no-store" });
+				if (!directoryResponse.ok) {
+					return;
+				}
+
+				const directoryListing = await directoryResponse.text();
+				const snapshotNumbers = Array.from(
+					directoryListing.matchAll(/(?:href=["'][^"']*\/)?(\d+)_cards_position\.json/gi),
+					match => Number(match[1])
+				);
+				if (!snapshotNumbers.length) {
+					return;
+				}
+
+				latestSnapshotNumber = Math.max(...snapshotNumbers);
+				snapshotPath = `cards/json/${latestSnapshotNumber}_cards_position.json`;
 			}
 
-			const directoryListing = await directoryResponse.text();
-			const snapshotNumbers = Array.from(
-				directoryListing.matchAll(/(?:href=["'][^"']*\/)?(\d+)_cards_position\.json/gi),
-				match => Number(match[1])
-			);
-			if (!snapshotNumbers.length) {
-				return;
-			}
-
-			const latestSnapshotNumber = Math.max(...snapshotNumbers);
 			const snapshotResponse = await fetch(
-				`cards/json/${latestSnapshotNumber}_cards_position.json`,
+				snapshotPath,
 				{ cache: "no-store" }
 			);
 			if (!snapshotResponse.ok) {
@@ -273,8 +281,10 @@ if (viewport && THREE) {
 			}
 
 			const latestSnapshot = await snapshotResponse.json();
-			nextSnapshotNumber = latestSnapshotNumber + 1;
-			localStorage.setItem("nextCardSnapshotNumber", String(nextSnapshotNumber));
+			if (latestSnapshotNumber !== null) {
+				nextSnapshotNumber = latestSnapshotNumber + 1;
+				localStorage.setItem("nextCardSnapshotNumber", String(nextSnapshotNumber));
+			}
 
 			plottedCards = Array.isArray(latestSnapshot.cards) ? latestSnapshot.cards : [];
 			plottedCards.forEach(restorePlottedCard);
