@@ -7,7 +7,7 @@
 // WHILE IN LOCAL DEV 
 // 1) SET USE_X_CARD_POSITIONS TO false
 // 2) ADD LATEST JSON FILE TO cards/json/ (e.g., 1_cards_position.json, 2_cards_position.json, etc.)
-const USE_X_CARD_POSITIONS = true;
+const USE_X_CARD_POSITIONS = false;
 // DO NOT CHANGE THE ABOVE LINES 
 
 
