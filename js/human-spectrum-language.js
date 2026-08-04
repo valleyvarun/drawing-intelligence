@@ -1,5 +1,16 @@
 (() => {
+
+// BEFORE PUSHING TO GITHUB
+// 1) COPY CORRECT CONTENT INTO x_cards_position.json
+// 2) SET USE_X_CARD_POSITIONS TO true
+
+// WHILE IN LOCAL DEV 
+// 1) SET USE_X_CARD_POSITIONS TO false
+// 2) ADD LATEST JSON FILE TO cards/json/ (e.g., 1_cards_position.json, 2_cards_position.json, etc.)
 const USE_X_CARD_POSITIONS = true;
+// DO NOT CHANGE THE ABOVE LINES 
+
+
 const THREE = window.THREE;
 const viewport = document.getElementById("human-spectrum-language-viewport");
 
@@ -42,6 +53,7 @@ if (viewport && THREE) {
 	const cardSources = Array.from({ length: 5 }, (_, index) => `cards/${index + 1}.png`);
 	const textureLoader = new THREE.TextureLoader();
 	const cardTextures = cardSources.map(source => textureLoader.load(source, render));
+	const selectableSpheres = [];
 
 	function createMarker(cardIndex) {
 		const marker = new THREE.Group();
@@ -55,8 +67,9 @@ if (viewport && THREE) {
 		card.scale.set(0.8, 1.2, 1);
 		marker.add(sphere, card);
 		graph.add(marker);
+		selectableSpheres.push(sphere);
 
-		return { marker, card };
+		return { marker, sphere, card };
 	}
 
 	let activeMarker = createMarker(0);
@@ -72,6 +85,7 @@ if (viewport && THREE) {
 	// Add '0' at the origin in grey
 	graph.add(createLabel("0", new THREE.Vector3(0, 0, -0.75), 0x666666, true));
 
+	let allValuesActive = false;
 	const controls = THREE.OrbitControls ? new THREE.OrbitControls(camera, renderer.domElement) : null;
 	if (controls) {
 		controls.mouseButtons = {
@@ -117,7 +131,41 @@ if (viewport && THREE) {
 			render();
 		});
 
+		// Toggle projection lines for every sphere in the viewport
+		const allValuesBtn = document.createElement("button");
+		allValuesBtn.innerText = "All Values";
+		allValuesBtn.setAttribute("aria-pressed", "false");
+		allValuesBtn.style.position = "absolute";
+		allValuesBtn.style.top = "5vh";
+		allValuesBtn.style.right = "1vw";
+		allValuesBtn.style.zIndex = "5";
+		allValuesBtn.style.padding = "0.5vh 1vw";
+		allValuesBtn.style.fontFamily = "inherit";
+		allValuesBtn.style.fontWeight = "bold";
+		allValuesBtn.style.background = "var(--background, #000)";
+		allValuesBtn.style.color = "var(--foreground, #fff)";
+		allValuesBtn.style.border = "0.1vw solid var(--rule, #333)";
+		allValuesBtn.style.cursor = "pointer";
+
+		allValuesBtn.addEventListener("click", () => {
+			allValuesActive = !allValuesActive;
+			allValuesBtn.setAttribute("aria-pressed", String(allValuesActive));
+			allValuesBtn.style.background = allValuesActive
+				? "#a62e96"
+				: "var(--background, #000)";
+			allValuesBtn.style.borderColor = allValuesActive
+				? "#a62e96"
+				: "var(--rule, #333)";
+
+			if (allValuesActive) {
+				drawAllProjectionLines();
+			} else {
+				clearSphereSelection();
+			}
+		});
+
 		viewport.appendChild(resetBtn);
+		viewport.appendChild(allValuesBtn);
 	}
 
 	const resizeObserver = new ResizeObserver(resize);
@@ -142,6 +190,100 @@ if (viewport && THREE) {
 	function render() {
 		renderer.render(scene, camera);
 	}
+
+	// Select spheres with a click and show their X, Y, and Z axis projections
+	const raycaster = new THREE.Raycaster();
+	const pointer = new THREE.Vector2();
+	const projectionLines = new THREE.Group();
+	const projectionMaterials = [
+		new THREE.LineBasicMaterial({ color: 0xd33f2f }),
+		new THREE.LineBasicMaterial({ color: 0x2f9e44 }),
+		new THREE.LineBasicMaterial({ color: 0x2f66d0 })
+	];
+	let selectedSphere = null;
+	let pointerDownPosition = null;
+	graph.add(projectionLines);
+
+	function clearProjectionLines() {
+		while (projectionLines.children.length) {
+			const line = projectionLines.children[0];
+			projectionLines.remove(line);
+			line.geometry.dispose();
+		}
+	}
+
+	function clearSphereSelection() {
+		selectedSphere = null;
+		clearProjectionLines();
+		render();
+	}
+
+	function addProjectionLines(sphere) {
+		const center = new THREE.Vector3();
+		sphere.getWorldPosition(center);
+		const axisPoints = [
+			new THREE.Vector3(center.x, 0, 0),
+			new THREE.Vector3(0, center.y, 0),
+			new THREE.Vector3(0, 0, center.z)
+		];
+
+		axisPoints.forEach((axisPoint, index) => {
+			const geometry = new THREE.BufferGeometry().setFromPoints([center, axisPoint]);
+			projectionLines.add(new THREE.Line(geometry, projectionMaterials[index]));
+		});
+	}
+
+	function drawProjectionLines(sphere) {
+		clearProjectionLines();
+		selectedSphere = sphere;
+		addProjectionLines(sphere);
+		render();
+	}
+
+	function drawAllProjectionLines() {
+		selectedSphere = null;
+		clearProjectionLines();
+		selectableSpheres
+			.filter(sphere => sphere.parent && sphere.parent.parent === graph)
+			.forEach(addProjectionLines);
+		render();
+	}
+
+	renderer.domElement.addEventListener("pointerdown", event => {
+		pointerDownPosition = { x: event.clientX, y: event.clientY };
+	});
+
+	renderer.domElement.addEventListener("pointerup", event => {
+		if (!pointerDownPosition) {
+			return;
+		}
+
+		const movement = Math.hypot(
+			event.clientX - pointerDownPosition.x,
+			event.clientY - pointerDownPosition.y
+		);
+		pointerDownPosition = null;
+		if (movement > 4) {
+			return;
+		}
+
+		const bounds = renderer.domElement.getBoundingClientRect();
+		pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+		pointer.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
+		raycaster.setFromCamera(pointer, camera);
+
+		const spheresInGraph = selectableSpheres.filter(
+			sphere => sphere.parent && sphere.parent.parent === graph
+		);
+		const intersection = raycaster.intersectObjects(spheresInGraph, false)[0];
+		if (allValuesActive) {
+			drawAllProjectionLines();
+		} else if (intersection) {
+			drawProjectionLines(intersection.object);
+		} else {
+			clearSphereSelection();
+		}
+	});
 
 	// Cycle through the available game cards
 	const cardImage = document.querySelector(".game-ui .card img");
@@ -199,7 +341,13 @@ if (viewport && THREE) {
 
 		activeMarker.marker.position.set(values.x, values.y, values.z * 2);
 		activeMarker.marker.userData.languagePrecision = values.w;
-		render();
+		if (allValuesActive) {
+			drawAllProjectionLines();
+		} else if (selectedSphere === activeMarker.sphere) {
+			drawProjectionLines(selectedSphere);
+		} else {
+			render();
+		}
 	}
 
 	function getSliderValues() {
