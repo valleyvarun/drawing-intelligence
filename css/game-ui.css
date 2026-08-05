@@ -2,23 +2,32 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 2rem;
+  gap: clamp(0.5rem, 1.5vh, 1rem);
   height: 100%;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+  padding-block: clamp(0.5rem, 1.5vh, 1rem);
+}
+
+.slide-2-layout .text-box {
+  width: clamp(18rem, 34%, 26rem);
+  max-width: 42%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .game-ui .card-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
-  flex: 1; /* allow the container to grow to its allowed limit */
-  min-height: 0; /* needed for flex children to shrink properly if nested inside other flex containers */
+  gap: clamp(0.35rem, 0.8vw, 0.75rem);
+  flex: 1 1 10rem;
+  min-height: 5rem;
 }
 
 .game-ui .card-btn {
-  padding: 0.5rem 1rem;
+  flex: 0 0 2.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
   cursor: pointer;
 }
 
@@ -38,14 +47,30 @@
 }
 
 .game-ui .card {
+  position: relative;
   height: 100%;
+  max-height: min(24vh, 14rem);
+  max-width: calc(100% - 5.25rem);
   aspect-ratio: 2 / 3;
-  min-height: 12rem;
   border: 5px solid #a62e96;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.game-ui .card-number {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.3rem 0.45rem;
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  font-size: 0.75rem;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .game-ui .card img {
@@ -57,30 +82,30 @@
 .game-ui .sliders-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: clamp(0.4rem, 1.15vh, 0.85rem);
 }
 
 .game-ui .slider-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: clamp(0.15rem, 0.5vh, 0.35rem);
 }
 
 .game-ui .slider-group label {
-  font-size: 0.65vw; /* matching the label size with the span texts below */
+  font-size: clamp(0.62rem, 0.65vw, 0.78rem);
 }
 
 .game-ui .slider-with-labels {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(8vw, 2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(4.8rem, 1fr) minmax(5rem, 1.6fr) minmax(4.8rem, 1fr);
   align-items: center;
-  gap: 0.5vw;
+  gap: clamp(0.25rem, 0.5vw, 0.5rem);
   width: 100%;
 }
 
 .game-ui .slider-with-labels span {
-  font-size: 0.65vw; /* matching the label parameter word sizes */
+  font-size: clamp(0.58rem, 0.65vw, 0.75rem);
   font-weight: bold;
   min-width: 0;
   white-space: nowrap;
@@ -101,15 +126,15 @@
 }
 
 .game-ui .slider-value {
-  width: 2vw;
-  height: 2vw;
+  width: 1.8rem;
+  height: 1.8rem;
   border: 1px solid var(--rule, #333);
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: inherit;
-  font-size: 0.65vw;
-  margin-top: 0.2vw;
+  font-size: 0.7rem;
+  margin-top: 0.1rem;
 }
 
 .game-ui .plot-container {
@@ -118,7 +143,19 @@
 }
 
 .game-ui .plot-btn {
-  padding: 0.35vw 1.4vw;
-  font-size: 0.85vw;
+  padding: 0.35rem 1.25rem;
+  font-size: clamp(0.72rem, 0.85vw, 0.9rem);
   cursor: pointer;
+}
+
+@media (max-width: 800px) {
+  .slide-2-layout .text-box {
+    width: 46%;
+    max-width: 46%;
+    padding-inline: 0.75rem;
+  }
+
+  .game-ui .slider-with-labels {
+    grid-template-columns: minmax(4.5rem, 1fr) minmax(4rem, 1.4fr) minmax(4.5rem, 1fr);
+  }
 }

@@ -50,7 +50,8 @@ if (viewport && THREE) {
 	// Create a movable marker containing a sphere and its card
 	const sphereGeometry = new THREE.SphereGeometry(0.1, 24, 16);
 	const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xa62e96 });
-	const cardSources = Array.from({ length: 5 }, (_, index) => `cards/${index + 1}.png`);
+	const CARD_COUNT = 20;
+	const cardSources = Array.from({ length: CARD_COUNT }, (_, index) => `cards/${index + 1}.png`);
 	const textureLoader = new THREE.TextureLoader();
 	const cardTextures = cardSources.map(source => textureLoader.load(source, render));
 	const selectableSpheres = [];
@@ -298,6 +299,7 @@ if (viewport && THREE) {
 
 	// Cycle through the available game cards
 	const cardImage = document.querySelector(".game-ui .card img");
+	const cardNumber = document.querySelector(".game-ui .card-number");
 	const previousCardButton = document.querySelector(".game-ui .card-prev");
 	const nextCardButton = document.querySelector(".game-ui .card-next");
 	const removeCardButton = document.querySelector(".game-ui .remove-card-btn");
@@ -316,6 +318,7 @@ if (viewport && THREE) {
 		currentCardIndex = availableCardIndexes[currentDeckPosition];
 		cardImage.src = cardSources[currentCardIndex];
 		cardImage.alt = `Card ${currentCardIndex + 1}`;
+		cardNumber.textContent = `Card ${currentCardIndex + 1}`;
 		activeMarker.card.material.map = cardTextures[currentCardIndex];
 		activeMarker.card.material.needsUpdate = true;
 		resetSliders();
@@ -414,6 +417,7 @@ if (viewport && THREE) {
 		}
 		cardImage.src = cardSources[currentCardIndex];
 		cardImage.alt = `Card ${currentCardIndex + 1}`;
+		cardNumber.textContent = `Card ${currentCardIndex + 1}`;
 		previousCardButton.hidden = true;
 		nextCardButton.hidden = true;
 		removeCardButton.hidden = false;
@@ -455,10 +459,13 @@ if (viewport && THREE) {
 		});
 		if (enabled) {
 			cardImage.style.visibility = "visible";
+			cardNumber.hidden = false;
 			cardImage.src = cardSources[currentCardIndex];
 			cardImage.alt = `Card ${currentCardIndex + 1}`;
+			cardNumber.textContent = `Card ${currentCardIndex + 1}`;
 		} else {
 			cardImage.style.visibility = "hidden";
+			cardNumber.hidden = true;
 			cardImage.removeAttribute("src");
 			cardImage.alt = "";
 		}
