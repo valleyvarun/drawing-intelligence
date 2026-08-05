@@ -7,7 +7,7 @@
 // WHILE IN LOCAL DEV 
 // 1) SET USE_X_CARD_POSITIONS TO false
 // 2) ADD LATEST JSON FILE TO cards/json/ (e.g., 1_cards_position.json, 2_cards_position.json, etc.)
-const USE_X_CARD_POSITIONS = false;
+const USE_X_CARD_POSITIONS = true;
 // DO NOT CHANGE THE ABOVE LINES 
 
 
@@ -36,21 +36,21 @@ if (viewport && THREE) {
 	// XY Grid (X: -10 to 10, Y: -10 to 10)
 	graph.add(createGridLines('x', 'y', [-10, 10], [-10, 10], 10, 10, colorGrid));
 
-	// YZ Grid (Y: -10 to 10, Z levels: 0 to 6)
-	graph.add(createGridLines('y', 'z', [-10, 10], [0, 12], 10, 6, colorGrid));
+	// YZ Grid (Y: -10 to 10, Z levels: 0 to 5)
+	graph.add(createGridLines('y', 'z', [-10, 10], [0, 10], 10, 5, colorGrid));
 
-	// ZX Grid (Z levels: 0 to 6, X: -10 to 10)
-	graph.add(createGridLines('z', 'x', [0, 12], [-10, 10], 6, 10, colorGrid));
+	// ZX Grid (Z levels: 0 to 5, X: -10 to 10)
+	graph.add(createGridLines('z', 'x', [0, 10], [-10, 10], 5, 10, colorGrid));
 
 	graph.add(createAxis(new THREE.Vector3(-10.4, 0, 0), new THREE.Vector3(10.4, 0, 0), 0xd33f2f));
 	graph.add(createAxis(new THREE.Vector3(0, -10.4, 0), new THREE.Vector3(0, 10.4, 0), 0x2f9e44));
 	// Z-axis only has positive part and is scaled differently
-	graph.add(createAxis(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 12.4), 0x2f66d0, true));
+	graph.add(createAxis(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 10.4), 0x2f66d0, true));
 
 	// Create a movable marker containing a sphere and its card
 	const sphereGeometry = new THREE.SphereGeometry(0.1, 24, 16);
 	const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xa62e96 });
-	const CARD_COUNT = 20;
+	const CARD_COUNT = 23;
 	const cardSources = Array.from({ length: CARD_COUNT }, (_, index) => `cards/${index + 1}.png`);
 	const textureLoader = new THREE.TextureLoader();
 	const cardTextures = cardSources.map(source => textureLoader.load(source, render));
@@ -84,7 +84,7 @@ if (viewport && THREE) {
 	graph.add(createLabel("abstracted", new THREE.Vector3(-11.4, 0, 0), 0xd33f2f));
 	graph.add(createLabel("perceptual", new THREE.Vector3(0, 11.4, 0), 0x2f9e44));
 	graph.add(createLabel("conceptual", new THREE.Vector3(0, -11.4, 0), 0x2f9e44));
-	graph.add(createLabel("Data Structure", new THREE.Vector3(0, 0, 13.0), 0x2f66d0));
+	graph.add(createLabel("Data Structure", new THREE.Vector3(0, 0, 11.0), 0x2f66d0));
 
 	// Add '0' at the origin in grey
 	graph.add(createLabel("0", new THREE.Vector3(0, 0, -0.75), 0x666666, true));
@@ -706,7 +706,8 @@ function createAxis(start, end, color, isZAxis = false) {
 	
 	// Create tick marks and number labels
 	if (isZAxis) {
-		for (let i = 1; i <= 6; i++) {
+		const dimensionCount = Math.floor(length / 2);
+		for (let i = 1; i <= dimensionCount; i++) {
 			const positionScale = i * 2;
 			const tickPos = origin.clone().add(direction.clone().multiplyScalar(positionScale));
 			const tick = new THREE.Mesh(tickGeometry, tickMaterial);
