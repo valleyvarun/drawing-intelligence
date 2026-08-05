@@ -65,7 +65,7 @@ if (viewport && THREE) {
 		}));
 
 		card.position.set(0, 0, 0.9);
-		card.scale.set(0.8, 1.2, 1);
+		card.scale.set(1.2, 1.8, 1);
 		marker.add(sphere, card);
 		graph.add(marker);
 		selectableSpheres.push(sphere);
