@@ -67,7 +67,7 @@
     <!-- ==================== SLIDE 2 ==================== -->
     <section class="slide section-target">
       <h2 class="slide-title">2. Spectrum of human language</h2>
-      <div class="split-layout right-text">
+      <div class="split-layout right-text slide-2-layout">
         <div class="text-box" style="max-width: fit-content; min-width: 25%;">
           <!-- SLIDE 2: TEXT CONTENT GOES HERE -->
           <div class="game-ui">
@@ -79,6 +79,7 @@
                 <img src="cards/1.png" alt="Card 1">
               </div>
               <button class="card-btn card-next" type="button" aria-label="Next card">&gt;</button>
+              <button class="remove-card-btn" type="button" hidden>Remove</button>
             </div>
 
             <!-- Middle: 4 Sliders -->
@@ -130,6 +131,9 @@
         </div>
         <div class="viewport" id="human-spectrum-language-viewport">
           <!-- SLIDE 2: VIEWPORT CONTENT GOES HERE -->
+          <button class="viewport-expand-button" type="button" aria-label="Expand viewport" aria-pressed="false">
+            <span aria-hidden="true">&#x26F6;</span>
+          </button>
         </div>
       </div>
     </section>

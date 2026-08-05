@@ -7,7 +7,7 @@
 // WHILE IN LOCAL DEV 
 // 1) SET USE_X_CARD_POSITIONS TO false
 // 2) ADD LATEST JSON FILE TO cards/json/ (e.g., 1_cards_position.json, 2_cards_position.json, etc.)
-const USE_X_CARD_POSITIONS = true;
+const USE_X_CARD_POSITIONS = false;
 // DO NOT CHANGE THE ABOVE LINES 
 
 
@@ -55,7 +55,7 @@ if (viewport && THREE) {
 	const cardTextures = cardSources.map(source => textureLoader.load(source, render));
 	const selectableSpheres = [];
 
-	function createMarker(cardIndex) {
+	function createMarker(cardIndex, isPlotted = false) {
 		const marker = new THREE.Group();
 		const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 		const card = new THREE.Sprite(new THREE.SpriteMaterial({
@@ -69,10 +69,13 @@ if (viewport && THREE) {
 		graph.add(marker);
 		selectableSpheres.push(sphere);
 
-		return { marker, sphere, card };
+		const markerState = { marker, sphere, card, cardIndex, isPlotted };
+		sphere.userData.markerState = markerState;
+		return markerState;
 	}
 
 	let activeMarker = createMarker(0);
+	let draftMarker = activeMarker;
 	let plottedCards = [];
 	let availableCardIndexes = cardSources.map((_, index) => index);
 
@@ -213,6 +216,10 @@ if (viewport && THREE) {
 	}
 
 	function clearSphereSelection() {
+		if (activeMarker?.isPlotted) {
+			restorePlottedPosition(activeMarker);
+			exitEditMode();
+		}
 		selectedSphere = null;
 		clearProjectionLines();
 		render();
@@ -279,6 +286,10 @@ if (viewport && THREE) {
 		if (allValuesActive) {
 			drawAllProjectionLines();
 		} else if (intersection) {
+			const markerState = intersection.object.userData.markerState;
+			if (markerState?.isPlotted) {
+				enterEditMode(markerState);
+			}
 			drawProjectionLines(intersection.object);
 		} else {
 			clearSphereSelection();
@@ -289,6 +300,7 @@ if (viewport && THREE) {
 	const cardImage = document.querySelector(".game-ui .card img");
 	const previousCardButton = document.querySelector(".game-ui .card-prev");
 	const nextCardButton = document.querySelector(".game-ui .card-next");
+	const removeCardButton = document.querySelector(".game-ui .remove-card-btn");
 	const plotButton = document.querySelector(".game-ui .plot-btn");
 	let currentDeckPosition = 0;
 	let currentCardIndex = 0;
@@ -365,6 +377,75 @@ if (viewport && THREE) {
 		updateSpherePosition();
 	}
 
+	function setSliders(values) {
+		axes.forEach(axis => {
+			sliders[axis].value = String(values[axis]);
+			valueBoxes[axis].textContent = String(values[axis]);
+		});
+	}
+
+	function getPlottedCard(markerState) {
+		return plottedCards.find(card => card.card === markerState.cardIndex + 1);
+	}
+
+	function restorePlottedPosition(markerState) {
+		const cardPosition = getPlottedCard(markerState);
+		if (!cardPosition) {
+			return;
+		}
+		markerState.marker.position.set(cardPosition.x, cardPosition.y, cardPosition.z * 2);
+		markerState.marker.userData.languagePrecision = cardPosition.w;
+	}
+
+	function enterEditMode(markerState) {
+		if (activeMarker?.isPlotted && activeMarker !== markerState) {
+			restorePlottedPosition(activeMarker);
+		}
+		if (draftMarker?.marker.parent === graph) {
+			graph.remove(draftMarker.marker);
+		}
+
+		activeMarker = markerState;
+		currentCardIndex = markerState.cardIndex;
+		setDeckEnabled(true);
+		const cardPosition = getPlottedCard(markerState);
+		if (cardPosition) {
+			setSliders(cardPosition);
+		}
+		cardImage.src = cardSources[currentCardIndex];
+		cardImage.alt = `Card ${currentCardIndex + 1}`;
+		previousCardButton.hidden = true;
+		nextCardButton.hidden = true;
+		removeCardButton.hidden = false;
+		plotButton.disabled = false;
+	}
+
+	function exitEditMode() {
+		if (!activeMarker?.isPlotted) {
+			return;
+		}
+
+		previousCardButton.hidden = false;
+		nextCardButton.hidden = false;
+		removeCardButton.hidden = true;
+		if (availableCardIndexes.length) {
+			currentDeckPosition %= availableCardIndexes.length;
+			currentCardIndex = availableCardIndexes[currentDeckPosition];
+			if (!draftMarker) {
+				draftMarker = createMarker(currentCardIndex);
+			}
+			activeMarker = draftMarker;
+			if (draftMarker.marker.parent !== graph) {
+				graph.add(draftMarker.marker);
+			}
+			setDeckEnabled(true);
+			showCard(currentDeckPosition);
+		} else {
+			activeMarker = null;
+			setDeckEnabled(false);
+		}
+	}
+
 	function setDeckEnabled(enabled) {
 		previousCardButton.disabled = !enabled;
 		nextCardButton.disabled = !enabled;
@@ -389,7 +470,7 @@ if (viewport && THREE) {
 			return;
 		}
 
-		const restoredMarker = createMarker(cardIndex);
+		const restoredMarker = createMarker(cardIndex, true);
 		restoredMarker.marker.position.set(cardPosition.x, cardPosition.y, cardPosition.z * 2);
 		restoredMarker.marker.userData.languagePrecision = cardPosition.w;
 	}
@@ -448,6 +529,7 @@ if (viewport && THREE) {
 			} else {
 				graph.remove(activeMarker.marker);
 				activeMarker = null;
+				draftMarker = null;
 				setDeckEnabled(false);
 				render();
 			}
@@ -472,7 +554,38 @@ if (viewport && THREE) {
 		localStorage.setItem("nextCardSnapshotNumber", String(nextSnapshotNumber));
 	}
 
-	// Save and commit the current marker, then remove its card from the deck
+	removeCardButton?.addEventListener("click", async () => {
+		if (!activeMarker?.isPlotted) {
+			return;
+		}
+
+		const markerToRemove = activeMarker;
+		const nextPlottedCards = plottedCards.filter(card => card.card !== markerToRemove.cardIndex + 1);
+		removeCardButton.disabled = true;
+		try {
+			await saveSnapshot(nextPlottedCards);
+			plottedCards = nextPlottedCards;
+			graph.remove(markerToRemove.marker);
+			const selectableIndex = selectableSpheres.indexOf(markerToRemove.sphere);
+			if (selectableIndex !== -1) {
+				selectableSpheres.splice(selectableIndex, 1);
+			}
+			availableCardIndexes.push(markerToRemove.cardIndex);
+			availableCardIndexes.sort((first, second) => first - second);
+			currentDeckPosition = availableCardIndexes.indexOf(markerToRemove.cardIndex);
+			clearProjectionLines();
+			selectedSphere = null;
+			exitEditMode();
+			render();
+		} catch (error) {
+			console.error(error);
+			window.alert(error.message);
+		} finally {
+			removeCardButton.disabled = false;
+		}
+	});
+
+	// Save a new marker or update the selected plotted marker
 	if (plotButton) {
 		plotButton.addEventListener("click", async () => {
 			if (!activeMarker) {
@@ -480,19 +593,30 @@ if (viewport && THREE) {
 			}
 
 			const position = getSliderValues();
-			const nextPlottedCards = [
-				...plottedCards,
-				{ card: currentCardIndex + 1, ...position }
-			];
+			const isEditing = activeMarker.isPlotted;
+			const updatedCard = { card: currentCardIndex + 1, ...position };
+			const nextPlottedCards = isEditing
+				? plottedCards.map(card => card.card === updatedCard.card ? updatedCard : card)
+				: [...plottedCards, updatedCard];
 
 			plotButton.disabled = true;
 			try {
 				await saveSnapshot(nextPlottedCards);
 				plottedCards = nextPlottedCards;
+				if (isEditing) {
+					clearProjectionLines();
+					selectedSphere = null;
+					exitEditMode();
+					render();
+					return;
+				}
+
+				activeMarker.isPlotted = true;
 				availableCardIndexes.splice(currentDeckPosition, 1);
 
 				if (!availableCardIndexes.length) {
 					activeMarker = null;
+					draftMarker = null;
 					setDeckEnabled(false);
 					render();
 					return;
@@ -501,6 +625,7 @@ if (viewport && THREE) {
 				currentDeckPosition %= availableCardIndexes.length;
 				currentCardIndex = availableCardIndexes[currentDeckPosition];
 				activeMarker = createMarker(currentCardIndex);
+				draftMarker = activeMarker;
 				showCard(currentDeckPosition);
 				plotButton.disabled = false;
 			} catch (error) {

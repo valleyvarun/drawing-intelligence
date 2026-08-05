@@ -2,6 +2,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const sectionTargets = Array.from(document.querySelectorAll(".section-target"));
   const sectionPrev = document.getElementById("section-prev");
   const sectionNext = document.getElementById("section-next");
+  const slide2Layout = document.querySelector(".slide-2-layout");
+  const viewportExpandButton = slide2Layout?.querySelector(".viewport-expand-button");
+
+  viewportExpandButton?.addEventListener("click", () => {
+    const isExpanded = slide2Layout.classList.toggle("is-viewport-expanded");
+    viewportExpandButton.setAttribute("aria-pressed", String(isExpanded));
+    viewportExpandButton.setAttribute("aria-label", isExpanded ? "Restore text area" : "Expand viewport");
+  });
 
   function getCurrentSectionIndex() {
     if (!sectionTargets.length) {

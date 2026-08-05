@@ -143,6 +143,42 @@ body {
   cursor: grabbing;
 }
 
+.viewport-expand-button {
+  position: absolute;
+  right: 1vw;
+  bottom: 1vh;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  color: var(--foreground);
+  background: var(--background);
+  border: 0.08vw solid var(--rule);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.viewport-expand-button:hover,
+.viewport-expand-button:focus-visible {
+  color: var(--background);
+  background: var(--foreground);
+  outline: 2px solid var(--background);
+  outline-offset: 2px;
+}
+
+.slide-2-layout.is-viewport-expanded .text-box {
+  display: none;
+}
+
+.slide-2-layout.is-viewport-expanded .viewport {
+  width: 100%;
+}
+
 .pdf-layout {
   display: grid;
   place-items: center;

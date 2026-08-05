@@ -22,6 +22,21 @@
   cursor: pointer;
 }
 
+.game-ui .remove-card-btn {
+  padding: 0.5rem 1rem;
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--rule);
+  font: inherit;
+  cursor: pointer;
+}
+
+.game-ui .remove-card-btn:hover,
+.game-ui .remove-card-btn:focus-visible {
+  color: var(--background);
+  background: var(--foreground);
+}
+
 .game-ui .card {
   height: 100%;
   aspect-ratio: 2 / 3;
