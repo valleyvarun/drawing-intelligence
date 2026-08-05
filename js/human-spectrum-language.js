@@ -90,6 +90,9 @@ if (viewport && THREE) {
 	graph.add(createLabel("0", new THREE.Vector3(0, 0, -0.75), 0x666666, true));
 
 	let allValuesActive = false;
+	let autoplayActive = false;
+	let autoplayTimer = null;
+	let autoplayIndex = 0;
 	const controls = THREE.OrbitControls ? new THREE.OrbitControls(camera, renderer.domElement) : null;
 	if (controls) {
 		controls.mouseButtons = {
@@ -151,25 +154,87 @@ if (viewport && THREE) {
 		allValuesBtn.style.border = "0.1vw solid var(--rule, #333)";
 		allValuesBtn.style.cursor = "pointer";
 
+		function setModeButtonActive(button, isActive) {
+			button.setAttribute("aria-pressed", String(isActive));
+			button.style.background = isActive ? "#a62e96" : "var(--background, #000)";
+			button.style.borderColor = isActive ? "#a62e96" : "var(--rule, #333)";
+		}
+
+		function stopAutoplay() {
+			autoplayActive = false;
+			window.clearInterval(autoplayTimer);
+			autoplayTimer = null;
+			setModeButtonActive(autoplayBtn, false);
+		}
+
 		allValuesBtn.addEventListener("click", () => {
 			allValuesActive = !allValuesActive;
-			allValuesBtn.setAttribute("aria-pressed", String(allValuesActive));
-			allValuesBtn.style.background = allValuesActive
-				? "#a62e96"
-				: "var(--background, #000)";
-			allValuesBtn.style.borderColor = allValuesActive
-				? "#a62e96"
-				: "var(--rule, #333)";
+			setModeButtonActive(allValuesBtn, allValuesActive);
 
 			if (allValuesActive) {
+				const wasAutoplayActive = autoplayActive;
+				stopAutoplay();
+				if (wasAutoplayActive) {
+					clearSphereSelection();
+				}
 				drawAllProjectionLines();
 			} else {
 				clearSphereSelection();
 			}
 		});
 
+		const autoplayBtn = document.createElement("button");
+		autoplayBtn.innerText = "Autoplay";
+		autoplayBtn.setAttribute("aria-pressed", "false");
+		autoplayBtn.style.position = "absolute";
+		autoplayBtn.style.top = "9vh";
+		autoplayBtn.style.right = "1vw";
+		autoplayBtn.style.zIndex = "5";
+		autoplayBtn.style.padding = "0.5vh 1vw";
+		autoplayBtn.style.fontFamily = "inherit";
+		autoplayBtn.style.fontWeight = "bold";
+		autoplayBtn.style.background = "var(--background, #000)";
+		autoplayBtn.style.color = "var(--foreground, #fff)";
+		autoplayBtn.style.border = "0.1vw solid var(--rule, #333)";
+		autoplayBtn.style.cursor = "pointer";
+
+		function showNextAutoplayCard() {
+			const visibleSpheres = selectableSpheres.filter(
+				sphere => sphere.parent
+					&& sphere.parent.parent === graph
+					&& sphere.userData.markerState?.isPlotted
+			);
+			if (!visibleSpheres.length) {
+				clearSphereSelection();
+				return;
+			}
+
+			autoplayIndex %= visibleSpheres.length;
+			const sphere = visibleSpheres[autoplayIndex];
+			enterEditMode(sphere.userData.markerState);
+			drawProjectionLines(sphere);
+			autoplayIndex = (autoplayIndex + 1) % visibleSpheres.length;
+		}
+
+		autoplayBtn.addEventListener("click", () => {
+			if (autoplayActive) {
+				stopAutoplay();
+				clearSphereSelection();
+				return;
+			}
+
+			allValuesActive = false;
+			setModeButtonActive(allValuesBtn, false);
+			autoplayActive = true;
+			autoplayIndex = 0;
+			setModeButtonActive(autoplayBtn, true);
+			showNextAutoplayCard();
+			autoplayTimer = window.setInterval(showNextAutoplayCard, 1000);
+		});
+
 		viewport.appendChild(resetBtn);
 		viewport.appendChild(allValuesBtn);
+		viewport.appendChild(autoplayBtn);
 	}
 
 	const resizeObserver = new ResizeObserver(resize);
@@ -420,7 +485,7 @@ if (viewport && THREE) {
 		cardNumber.textContent = `Card ${currentCardIndex + 1}`;
 		previousCardButton.hidden = true;
 		nextCardButton.hidden = true;
-		removeCardButton.hidden = false;
+		removeCardButton.hidden = autoplayActive;
 		plotButton.disabled = false;
 	}
 

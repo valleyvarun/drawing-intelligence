@@ -289,7 +289,7 @@
             </div>
             <p><em>by Anthropic</em></p>
             <br>
-            <p>Page 6 Notes</p>
+            <p>Claude's AI agent chatbot is connected to a canvas to recieve drawing input as a part of the prompt. It assists with coding user interfaces and interaction design.</p>
           </div>
         </div>
         
@@ -306,54 +306,11 @@
             </div>
             <p><em>by McNeel</em></p>
             <br>
-            <p>Page 7 Notes</p>
+            <p>allows designers to use a stylus to sketch and annotate directly over Rhino viewports.</p>
           </div>
         </div>
 
       </div>
-      
-      <script>
-        document.addEventListener('DOMContentLoaded', () => {
-          let currentPage = 1;
-          const totalPages = 7;
-          const prevBtn = document.getElementById('slide5-prev');
-          const nextBtn = document.getElementById('slide5-next');
-          const counter = document.getElementById('slide5-counter');
-
-          function updateSlide5Page() {
-            for (let i = 1; i <= totalPages; i++) {
-              const page = document.getElementById('slide5-page' + i);
-              const isCurrent = (i === currentPage);
-              page.style.display = isCurrent ? 'flex' : 'none';
-              
-              const videos = page.querySelectorAll('video[data-autoplay="true"]');
-              videos.forEach(video => {
-                if (isCurrent) {
-                  video.play();
-                } else {
-                  video.pause();
-                  video.currentTime = 0;
-                }
-              });
-            }
-            counter.innerText = 'Page ' + currentPage + ' / ' + totalPages;
-          }
-
-          prevBtn.addEventListener('click', () => {
-            if (currentPage > 1) {
-              currentPage--;
-              updateSlide5Page();
-            }
-          });
-
-          nextBtn.addEventListener('click', () => {
-            if (currentPage < totalPages) {
-              currentPage++;
-              updateSlide5Page();
-            }
-          });
-        });
-      </script>
     </section>
     
     <!-- ==================== SLIDE 6 ==================== -->
